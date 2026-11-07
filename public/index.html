@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sika</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#14213d">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#eef2f6;--card:#fff;--ink:#14213d;--mut:#66738a;--hero:#14213d;--gold:#e0b04a;--pos:#0e7c66;--neg:#c0392b;--line:#dbe2ea;--pri:#14213d;--onp:#fff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1424;--card:#15213a;--ink:#e8edf6;--mut:#8d9bb3;--hero:#1b2c4d;--gold:#e8bd5c;--pos:#3fc4a5;--neg:#ef7f70;--line:#243452;--pri:#e8bd5c;--onp:#0c1424;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0c1424;--card:#15213a;--ink:#e8edf6;--mut:#8d9bb3;--hero:#1b2c4d;--gold:#e8bd5c;--pos:#3fc4a5;--neg:#ef7f70;--line:#243452;--pri:#e8bd5c;--onp:#0c1424;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 "Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:inherit}
+#app{height:100%;display:flex;flex-direction:column;max-width:560px;margin:0 auto}
+main{flex:1;overflow-y:auto;padding:16px 16px 96px}
+nav{display:flex;background:var(--card);border-top:1px solid var(--line)}
+nav button{flex:1;padding:13px 0;border:0;background:none;color:var(--mut);font-size:13px;font-weight:600}
+nav button.on{color:var(--ink);box-shadow:inset 0 3px 0 var(--gold)}
+.fab{position:fixed;right:max(18px,calc(50% - 262px));bottom:calc(72px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:50%;border:0;background:var(--gold);color:#14213d;font-size:30px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.hero{position:relative;overflow:hidden;background:var(--hero);color:#fff;border-radius:18px;padding:28px 20px 22px}
+.hero::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:repeating-linear-gradient(90deg,#ce1126 0 22px,#fcd116 22px 44px,#006b3f 44px 66px,#111 66px 72px)}
+.hero small{opacity:.75;display:block}
+.hero .big{font-size:40px;font-weight:800;color:var(--gold);margin:4px 0 8px;letter-spacing:-.5px}
+.hero .fx{font-size:12px;opacity:.7}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.box small{color:var(--mut);display:block}.box b{font-size:17px}
+.box.wide{grid-column:span 2}
+h3{margin:20px 0 8px;font-size:16px}h4{margin:16px 0 6px;font-size:13px;color:var(--mut);font-weight:600}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.row small{display:block;color:var(--mut);font-size:12px}
+.amt{font-weight:700;white-space:nowrap;text-align:right}.pos{color:var(--pos)}.neg{color:var(--neg)}
+.x{border:0;background:none;color:var(--mut);margin-left:8px;padding:4px 6px;font-size:13px}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--gold)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:20px;padding:7px 13px;font-size:13px}
+.chip.on{background:var(--pri);color:var(--onp);border-color:var(--pri)}
+.btn{border:0;border-radius:10px;padding:13px;background:var(--pri);color:var(--onp);font-weight:700;width:100%}
+.btn.gh{background:none;border:1px solid var(--line);color:var(--ink)}
+.btn.dn{background:var(--neg);color:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:12px;color:var(--mut);margin:10px 0 0}
+input,select,textarea{display:block;width:100%;margin-top:4px;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:16px}
+#sheet:empty{display:none}
+.bk{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20}
+.sh{position:fixed;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;z-index:21;background:var(--bg);border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));max-height:92%;overflow-y:auto}
+.err{color:var(--neg);min-height:20px;margin:6px 0;font-size:13px}
+.empty{color:var(--mut);text-align:center;padding:26px 10px}
+.pg{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:8px 0 4px}.pg i{display:block;height:100%;background:var(--pos)}
+.due{color:var(--neg);font-weight:600}
+#lock{position:fixed;inset:0;z-index:50;background:var(--hero);color:#fff;display:flex;justify-content:center;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);overflow-y:auto}
+#lock[hidden]{display:none}
+.lk{width:100%;max-width:340px;text-align:center;padding:36px 20px;margin:auto}
+.lk h1{margin:0 0 4px;font-size:24px;font-weight:800;color:var(--gold)}.lk p{margin:6px 0;opacity:.85}
+.lk .err{color:#ffb4a8}
+.dots{display:flex;justify-content:center;gap:14px;margin:20px 0 4px}.dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--gold)}.dots i.on{background:var(--gold)}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px auto 0;max-width:260px}
+.pad button{height:62px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font-size:22px;font-weight:600}
+.lnk{border:0;background:none;color:var(--gold);margin-top:16px;font-size:14px}
+[hidden]{display:none!important}textarea{font-size:13px}.row[data-act=edit]{cursor:pointer}.box .row:last-child{border:0}
+.kt{height:6px;width:96px;margin:0 auto 18px;border-radius:3px;background:repeating-linear-gradient(90deg,#ce1126 0 16px,#fcd116 16px 32px,#006b3f 32px 48px,#111 48px 52px)}
+</style>
+</head>
+<body>
+<div id="app"></div><div id="sheet"></div><div id="lock" hidden></div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import{getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import{getFirestore,doc,getDoc,setDoc,deleteDoc}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import{CFG}from"./firebase-config.js";
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+const $=s=>document.querySelector(s),LS="adm_v1";
+let D=null,KEY=null,SALT=null,tab="home",flt="all",ld="out",pd=null,S={},mode="unlock",buf="",tmp="",msg="",hid=0,wp=false,rw=false;
+const EF={income:1,collect:1,borrow:1,sale:1,expense:-1,invest:-1,lend:-1,repay:-1,bizcost:-1,transfer:-1};
+const LBL={income:"Income",expense:"Expense",invest:"Investment",lend:"Loan given",collect:"Loan collected",borrow:"Money borrowed",repay:"Debt repaid",sale:"Sale",bizcost:"Business cost",transfer:"Transfer"};
+const CAT={expense:["Food","Transport","Utilities","Family","Giving","School","Health","Airtime & data","Other"],income:["Salary","Business","Collections","Gift","Other"],invest:["Building","Vehicle","Land","Business","Shares","Other"]};
+Object.assign(CAT,{expense:["Food & chop","Transport & fuel","Rent","Utilities (ECG, water)","Airtime & data","Tithe & offering","Funerals & social","Family support","School fees","Health & NHIS","MoMo charges","Clothing & care","TV & subscriptions","Other"],income:["Salary","Allowance","Business","Collections","Rent received","Susu payout","Gift","Other"],sale:["Goods","Services","Food","Airtime & MoMo commission","Other"],bizcost:["Stock","Transport","Shop rent","Wages","Packaging","Utilities","Other"]});
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const toP=s=>Math.round(parseFloat(String(s).replace(/,/g,""))*100)||0;
+const f2=n=>((n||0)/100).toLocaleString("en-GH",{minimumFractionDigits:2,maximumFractionDigits:2}),fmt=n=>"GH₵ "+f2(n);
+const now=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16);
+const uid=()=>Math.random().toString(36).slice(2,9);
+const put=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},get=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const enc=u=>{let s="";for(const x of u)s+=String.fromCharCode(x);return btoa(s)},dec=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function derive(p,salt){const m=await crypto.subtle.importKey("raw",new TextEncoder().encode(p),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:150000,hash:"SHA-256"},m,{name:"AES-GCM",length:256},false,["encrypt","decrypt"])}
+async function save(){if(!D||!KEY)return;const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},KEY,new TextEncoder().encode(JSON.stringify(D)));put(LS,JSON.stringify({s:enc(SALT),iv:enc(iv),d:enc(new Uint8Array(ct))}));put("adm_u",String(Date.now()));put("adm_d","1");push()}
+const defaults=()=>({acc:[{id:"a1",name:"Bank",type:"bank",open:0},{id:"a2",name:"MoMo",type:"momo",open:0},{id:"a3",name:"Cash in hand",type:"cash",open:0}],tx:[],loans:[],lock:60,v:2,budget:0});
+
+/* ---------- cloud ---------- */
+const app=initializeApp(CFG),auth=getAuth(app),fs=getFirestore(app);
+let U=null,pushing=false,again=false,am="in";
+const cs=t=>{const e=$("#cs");if(e)e.textContent=t},rf=()=>doc(fs,"users",U.uid),pk=r=>JSON.stringify({s:r.s,iv:r.iv,d:r.d});
+async function pull(){if(!navigator.onLine)return false;try{const s=await Promise.race([getDoc(rf()),new Promise((_,j)=>setTimeout(j,5000))]);return s.exists()?s.data():null}catch(e){return false}}
+async function push(){if(!U||!navigator.onLine||get("adm_c"))return;if(pushing){again=true;return}pushing=true;
+try{const b=get(LS);if(b){const r=await pull();if(r===false)throw 0;if(r&&r.t!==+get("adm_b")){put("adm_c",pk(r));cs("Another device changed your records. They will merge when you next unlock.");pushing=false;return}
+const t=+get("adm_u")||Date.now();await setDoc(rf(),{...JSON.parse(b),t});put("adm_b",String(t));if((+get("adm_u")||t)===t)put("adm_d","0");cs("Synced to your account")}}
+catch(e){cs("Saved on this phone. It will sync when you are online.")}pushing=false;if(again){again=false;push()}}
+async function reconcile(){const r=await pull();if(r===false)return false;const loc=get(LS),dirty=get("adm_d")==="1",nb=r&&r.t!==+get("adm_b");
+if(!r){if(loc)push();return true}
+if(!loc||(nb&&!dirty)){put(LS,pk(r));put("adm_b",String(r.t));put("adm_u",String(r.t));put("adm_d","0");put("adm_c","")}
+else if(nb)put("adm_c",pk(r));else if(dirty)push();return true}
+async function mergeC(p){try{const b=JSON.parse(get("adm_c")),k=await derive(p,dec(b.s)),R=JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:dec(b.iv)},k,dec(b.d))));
+for(const f of["acc","tx","loans"]){const ids=new Set(D[f].map(x=>x.id));(R[f]||[]).forEach(x=>{if(!ids.has(x.id)&&!(D.gone||[]).includes(x.id))D[f].push(x)})}
+put("adm_c","");await save()}catch(e){put("adm_c","");await save()}}
+function authView(m){$("#lock").innerHTML=`<div class="lk"><div class="kt"></div><h1>Sika</h1><p style="font-size:12px;opacity:.7;margin:0">by Adombra</p><p>${am==="in"?"Log in to open your records":"Create your account"}</p><input id="em" type="email" autocomplete="email" placeholder="Email"><input id="pw" type="password" autocomplete="${am==="in"?"current-password":"new-password"}" placeholder="Password (6+ characters)" style="margin-top:8px"><p class="err">${esc(m||"")}</p><button class="btn" style="background:var(--gold);color:#14213d" data-act="auth">${am==="in"?"Log in":"Create account"}</button><button class="lnk" data-act="amode">${am==="in"?"New here? Create an account":"Have an account? Log in"}</button>${am==="in"?'<br><button class="lnk" data-act="forgot">Forgot password</button>':""}</div>`;$("#lock").hidden=false}
+/* ---------- lock screen ---------- */
+function lockView(){const t={unlock:"Enter your PIN",setup1:"Create a 6-digit PIN to protect your records",setup2:"Enter the PIN again to confirm",change1:"Choose a new 6-digit PIN",change2:"Enter the new PIN again"}[mode];
+$("#lock").innerHTML=`<div class="lk"><div class="kt"></div><h1>Sika</h1><p style="font-size:12px;opacity:.7;margin:0">by Adombra</p><p>${t}</p><div class="dots">${[0,1,2,3,4,5].map(i=>`<i class="${i<buf.length?"on":""}"></i>`).join("")}</div><p class="err">${esc(msg)}</p><div class="pad">${[1,2,3,4,5,6,7,8,9,"",0,"⌫"].map(k=>k===""?"<span></span>":`<button data-k="${k}">${k}</button>`).join("")}</div>${mode==="change1"||mode==="change2"?'<button class="lnk" data-act="cancelpin">Cancel</button>':""}${mode.startsWith("setup")?'<p style="font-size:12px;opacity:.7;margin-top:18px">Your records are encrypted with this PIN. It cannot be recovered if you forget it.</p>':""}</div>`;
+$("#lock").hidden=false}
+async function key(k){if(k==="⌫")buf=buf.slice(0,-1);else if(buf.length<6)buf+=k;msg="";if(buf.length<6)return lockView();
+const p=buf;buf="";lockView();
+if(mode==="unlock")await tryUnlock(p);
+else if(mode.endsWith("1")){tmp=p;mode=mode.replace("1","2")}
+else if(p!==tmp){msg="The PINs did not match. Start again.";mode=mode.replace("2","1")}
+else await commitPin(p);
+if(!$("#lock").hidden)lockView()}
+async function tryUnlock(p){await reconcile();const f=+get("adm_f")||0,w=(+get("adm_t")||0)-Date.now();
+if(w>0){msg="Too many tries. Wait "+Math.ceil(w/1000)+" seconds.";return}
+try{const b=JSON.parse(get(LS)),s=dec(b.s),k=await derive(p,s);const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:dec(b.iv)},k,dec(b.d));D=JSON.parse(new TextDecoder().decode(pt));if(!D.v){D.acc.forEach(a=>a.open=Math.round(a.open*100));D.tx.forEach(t=>t.amt=Math.round(t.amt*100));D.loans.forEach(l=>{l.p=Math.round(l.p*100);l.paid=Math.round(l.paid*100)});D.budget=Math.round((D.budget||0)*100);D.v=2}KEY=k;SALT=s;put("adm_f","0");if(get("adm_c"))await mergeC(p);openApp()}
+catch(e){const n=f+1;put("adm_f",String(n));if(n>=3)put("adm_t",String(Date.now()+Math.min(300,10*2**(n-3))*1000));msg="Wrong PIN."}}
+async function commitPin(p){SALT=crypto.getRandomValues(new Uint8Array(16));KEY=await derive(p,SALT);if(!D)D=defaults();await save();openApp()}
+function openApp(){mode="unlock";buf="";tmp="";msg="";$("#lock").hidden=true;render()}
+function lockNow(){D=null;KEY=null;$("#sheet").innerHTML="";$("#app").innerHTML="";mode="unlock";buf="";lockView()}
+document.addEventListener("visibilitychange",()=>{if(document.hidden)hid=Date.now();else if(D&&Date.now()-hid>D.lock*1000)lockNow()});
+
+/* ---------- numbers ---------- */
+function calc(){const a=D.acc.map(x=>({...x,bal:x.open+D.tx.filter(t=>t.acc===x.id).reduce((s,t)=>s+EF[t.type]*t.amt,0)+D.tx.filter(t=>t.to===x.id).reduce((s,t)=>s+t.amt,0)}));
+const sm=ty=>a.filter(x=>x.type===ty).reduce((s,x)=>s+x.bal,0),out=l=>Math.round(l.p*(1+l.r/100))-l.paid,ls=d=>D.loans.filter(l=>l.dir===d).reduce((s,l)=>s+Math.max(0,out(l)),0);
+const bank=sm("bank"),momo=sm("momo"),cash=sm("cash"),save=sm("save"),ow=ls("out"),oi=ls("in");return{a,bank,momo,cash,save,ow,oi,out,net:bank+momo+cash+save+ow-oi}}
+const sorted=()=>[...D.tx].sort((a,b)=>b.ts.localeCompare(a.ts));
+const row=t=>{const ac=D.acc.find(x=>x.id===t.acc),p=EF[t.type]>0;return `<div class="row" data-act="edit" data-id="${t.id}"><div><b>${LBL[t.type]}${t.cat?" · "+esc(t.cat):""}</b><small>${t.ts.slice(0,10)} ${t.ts.slice(11,16)} · ${esc(ac?ac.name:"")}${t.to?" → "+esc((D.acc.find(x=>x.id===t.to)||{}).name):""}${t.who?" · "+esc(t.who):""}${t.note?" · "+esc(t.note):""}</small></div><div class="amt ${t.to?"":p?"pos":"neg"}">${t.to?"":p?"+":"−"}${f2(t.amt)}<button class="x" data-act="del" data-id="${t.id}">${pd===t.id?"Delete?":"✕"}</button></div></div>`};
+
+/* ---------- views ---------- */
+function home(){const c=calc(),m=now().slice(0,7),mt=D.tx.filter(t=>t.ts.slice(0,7)===m),sm=ty=>mt.filter(t=>t.type===ty).reduce((s,t)=>s+t.amt,0);
+const bp=sm("sale")-sm("bizcost"),ex=sm("expense"),bud=D.budget>0?`<div class="box" style="margin-bottom:10px"><div class="row" style="border:0;padding:0"><small>Monthly spending limit</small><b>${fmt(ex)} of ${fmt(D.budget)}</b></div><div class="bar"><i style="width:${Math.min(100,ex/D.budget*100)}%;${ex>D.budget?"background:var(--neg)":""}"></i></div></div>`:"";
+const nb=D.tx.length&&(!D.bk||Date.now()-D.bk>6048e5)?'<div class="box" data-tab="set" style="margin-top:10px;border-color:var(--gold);cursor:pointer"><b>Back up your records</b><small>Your data lives only on this phone. Tap to make a backup.</small></div>':"";
+const cats={};mt.filter(t=>t.type==="expense").forEach(t=>cats[t.cat]=(cats[t.cat]||0)+t.amt);const ce=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,5),mx=ce.length?ce[0][1]:1;
+return `<div class="hero"><small>Your worth today</small><div class="big">${fmt(c.net)}</div><div class="fx">Bank + MoMo + Cash + Savings + Owed to you − What you owe</div></div>${nb}
+<h3>Where your money is</h3><div class="box">${c.a.map(a=>`<div class="row"><span>${esc(a.name)}</span><b>${fmt(a.bal)}</b></div>`).join("")}</div><div class="two" style="margin-top:10px"><div class="box"><small>Owed to you</small><b class="pos">${fmt(c.ow)}</b></div><div class="box"><small>You owe</small><b class="neg">${fmt(c.oi)}</b></div></div>
+<h3>This month</h3><div class="grid"><div class="box"><small>Income</small><b class="pos">${fmt(sm("income"))}</b></div><div class="box"><small>Expenses</small><b class="neg">${fmt(sm("expense"))}</b></div><div class="box"><small>Invested</small><b>${fmt(sm("invest"))}</b></div><div class="box"><small>Business profit</small><b class="${bp<0?"neg":"pos"}">${fmt(bp)}</b></div></div>${bud}
+${ce.length?`<h3>Where it went</h3>${ce.map(([k,v])=>`<div style="margin-bottom:10px"><div class="row" style="border:0;padding:0"><span>${esc(k)}</span><b>${fmt(v)}</b></div><div class="bar"><i style="width:${v/mx*100}%"></i></div></div>`).join("")}`:""}
+<h3>Latest</h3>${D.tx.length?sorted().slice(0,5).map(row).join(""):'<div class="empty">Nothing recorded yet. Tap + to add your first entry.</div>'}`}
+function act(){let l=sorted();if(flt!=="all")l=l.filter(t=>flt==="loan"?t.loan:flt==="biz"?(t.type==="sale"||t.type==="bizcost"):t.type===flt);let h="",d="";
+for(const t of l){const k=t.ts.slice(0,10);if(k!==d){d=k;h+=`<h4>${new Date(k+"T00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"})}</h4>`}h+=row(t)}
+return `<div class="chips">${[["all","All"],["income","Income"],["expense","Expenses"],["invest","Investments"],["biz","Business"],["loan","Loans"]].map(([k,n])=>`<button class="chip ${flt===k?"on":""}" data-act="flt" data-v="${k}">${n}</button>`).join("")}</div>${h||'<div class="empty">No entries here yet.</div>'}`}
+function loans(){const c=calc(),td=now().slice(0,10),l=D.loans.filter(x=>x.dir===ld&&c.out(x)>.005);
+return `<div class="chips"><button class="chip ${ld==="out"?"on":""}" data-act="ld" data-v="out">People owe me</button><button class="chip ${ld==="in"?"on":""}" data-act="ld" data-v="in">I owe</button></div>
+${l.map(x=>{const tot=Math.round(x.p*(1+x.r/100)),od=x.due&&x.due<td;return `<div class="box" style="margin-bottom:10px"><div class="row" style="border:0;padding:0"><b>${esc(x.who)}</b><b>${fmt(c.out(x))}</b></div><small>${fmt(x.p)} at ${x.r}% = ${fmt(tot)} · paid ${fmt(x.paid)}</small><div class="pg"><i style="width:${Math.min(100,x.paid/tot*100)}%"></i></div><div class="row" style="border:0;padding:0"><small class="${od?"due":""}">${x.due?(od?"Overdue since ":"Due ")+x.due:"No due date"}</small><button class="chip" data-act="pay" data-v="${ld==="out"?"collect":"repay"}" data-id="${x.id}">${ld==="out"?"Collect":"Pay"}</button></div></div>`}).join("")||`<div class="empty">${ld==="out"?"No one owes you right now.":"You have no open debts."}</div>`}`}
+function biz(){const m=now().slice(0,7),b=D.tx.filter(t=>t.type==="sale"||t.type==="bizcost"),mt=b.filter(t=>t.ts.slice(0,7)===m),sm=ty=>mt.filter(t=>t.type===ty).reduce((s,t)=>s+t.amt,0),sl=sm("sale"),co=sm("bizcost"),all=b.reduce((s,t)=>s+(t.type==="sale"?t.amt:-t.amt),0),cats={};
+mt.filter(t=>t.type==="bizcost").forEach(t=>cats[t.cat]=(cats[t.cat]||0)+t.amt);
+return `<div class="hero"><small>Business profit this month</small><div class="big">${fmt(sl-co)}</div><div class="fx">Sales − Business costs${sl>0?" · margin "+Math.round((sl-co)/sl*100)+"%":""}</div></div>
+<div class="grid"><div class="box"><small>Sales</small><b class="pos">${fmt(sl)}</b></div><div class="box"><small>Costs</small><b class="neg">${fmt(co)}</b></div><div class="box wide"><small>All-time profit</small><b>${fmt(all)}</b></div></div>
+<div class="two"><button class="btn" data-act="pay" data-v="sale">Record a sale</button><button class="btn gh" data-act="pay" data-v="bizcost">Add a cost</button></div>
+${Object.keys(cats).length?`<h3>Costs this month</h3>${Object.entries(cats).sort((x,y)=>y[1]-x[1]).map(([k,v])=>`<div class="row"><span>${esc(k)}</span><b>${fmt(v)}</b></div>`).join("")}`:""}
+<h3>Recent business entries</h3>${[...b].sort((x,y)=>y.ts.localeCompare(x.ts)).slice(0,30).map(row).join("")||'<div class="empty">No sales yet. Record your first one above.</div>'}`}
+function set(){const c=calc();
+return `<h3 style="margin-top:4px">Accounts</h3>${c.a.map(a=>`<div class="row"><div><b>${esc(a.name)}</b><small>${{bank:"Bank",momo:"Mobile money",cash:"Cash",save:"Savings / Susu"}[a.type]}</small></div><b>${fmt(a.bal)}</b></div>`).join("")}
+<div class="box" style="margin-top:12px"><b>Add an account</b><div class="two"><label>Name<input id="na" placeholder="e.g. GCB savings"></label><label>Type<select id="nt"><option value="bank">Bank</option><option value="momo">Mobile money</option><option value="cash">Cash</option><option value="save">Savings / Susu</option></select></label></div><label>Balance now (GH₵)<input id="no" inputmode="decimal" placeholder="0.00"></label><p class="err" id="ne"></p><button class="btn" data-act="addacc">Add account</button></div>
+<h3>Budget</h3><label>Monthly spending limit (GH₵)<input id="bd" inputmode="decimal" placeholder="Leave empty for none" value="${D.budget?D.budget/100:""}"></label><h3>Account and sync</h3><div class="row"><span>${esc(U?U.email:"")}</span><button class="chip" data-act="out">Sign out</button></div><p id="cs" style="color:var(--mut);font-size:13px">Cloud sync is on.</p><h3>Security</h3><label>Lock automatically after leaving the app for<select id="al">${[[0,"Immediately"],[60,"1 minute"],[300,"5 minutes"]].map(([v,n])=>`<option value="${v}" ${D.lock===v?"selected":""}>${n}</option>`).join("")}</select></label>
+<div class="two" style="margin-top:12px"><button class="btn gh" data-act="chpin">Change PIN</button><button class="btn" data-act="lock">Lock now</button></div>
+<p style="color:var(--mut);font-size:12px">Records are encrypted on this phone with your PIN. Cloud sync and optional SMS reading arrive in the next phase.</p>
+<h3>Back up and restore</h3><p style="color:var(--mut);font-size:13px;margin:0 0 8px">A backup is a block of locked text. Only your PIN opens it, so it is safe to keep in WhatsApp or email.</p><button class="btn" data-act="bk">Create backup</button><textarea id="bko" rows="4" hidden readonly></textarea><label>Restore from a backup<textarea id="rso" rows="3" placeholder="Paste a backup here"></textarea></label><button class="btn gh" style="margin-top:8px" data-act="rs">Restore</button><p class="err" id="bkm" style="color:var(--mut)"></p>
+<button class="btn ${wp?"dn":"gh"}" style="margin-top:8px" data-act="wipe">${wp?"Tap again to erase everything":"Erase all data"}</button>`}
+function render(){if(!D)return;const v={home,act,loans,biz,set}[tab]();$("#app").innerHTML=`<main>${v}</main><nav>${[["home","Home"],["act","Activity"],["loans","Loans"],["biz","Business"],["set","Settings"]].map(([k,n])=>`<button data-tab="${k}" class="${tab===k?"on":""}">${n}</button>`).join("")}</nav><button class="fab" data-act="new" aria-label="Add entry">+</button>`}
+
+/* ---------- entry sheet ---------- */
+function vals(){for(const [k,i] of [["amt","f_amt"],["acc","f_acc"],["to","f_to"],["cat","f_cat"],["who","f_who"],["rate","f_rate"],["due","f_due"],["loan","f_loan"],["ts","f_ts"],["note","f_note"]]){const x=$("#"+i);if(x)S[k]=x.value}}
+function draw(){const t=S.type,c=calc(),ls=t==="lend"||t==="borrow",lp=t==="collect"||t==="repay",lo=D.loans.filter(l=>l.dir===(t==="collect"?"out":"in")&&c.out(l)>.005);
+$("#sheet").innerHTML=`<div class="bk" data-act="close"></div><div class="sh">${S.edit?`<h3 style="margin:0 0 4px">Edit: ${LBL[t]}</h3>`:""}<div class="chips" style="${S.edit?"display:none":""}">${Object.keys(LBL).map(k=>`<button class="chip ${k===t?"on":""}" data-act="stype" data-v="${k}">${LBL[k]}</button>`).join("")}</div>
+<label>Amount (GH₵)<input id="f_amt" inputmode="decimal" placeholder="0.00" value="${esc(S.amt||"")}"></label>
+<label>${EF[t]>0?"Received into":"Paid from"}<select id="f_acc">${D.acc.map(a=>`<option value="${a.id}" ${S.acc===a.id?"selected":""}>${esc(a.name)}</option>`).join("")}</select></label>
+${t==="transfer"?`<label>Move to<select id="f_to">${D.acc.map(a=>`<option value="${a.id}" ${(S.to||(D.acc[1]&&D.acc[1].id))===a.id?"selected":""}>${esc(a.name)}</option>`).join("")}</select></label>`:""}${CAT[t]?`<label>Category<select id="f_cat">${CAT[t].map(x=>`<option ${S.cat===x?"selected":""}>${x}</option>`).join("")}</select></label>`:""}
+${ls?`<label>Person<input id="f_who" value="${esc(S.who||"")}"></label><div class="two"><label>Interest %<input id="f_rate" inputmode="decimal" placeholder="0" value="${esc(S.rate||"")}"></label><label>Due date<input id="f_due" type="date" value="${esc(S.due||"")}"></label></div>`:""}
+${lp&&!S.edit?`<label>${t==="collect"?"Who is paying":"Which debt"}<select id="f_loan">${lo.length?lo.map(l=>`<option value="${l.id}" ${S.loan===l.id?"selected":""}>${esc(l.who)} · ${fmt(c.out(l))}</option>`).join(""):'<option value="">No open loans</option>'}</select></label>`:""}
+<label>Date and time<input id="f_ts" type="datetime-local" value="${esc(S.ts||now())}"></label>
+<label>Note<input id="f_note" value="${esc(S.note||"")}"></label>
+<p class="err">${esc(S.err||"")}</p><div class="two"><button class="btn gh" data-act="close">Cancel</button><button class="btn" data-act="save">Save entry</button></div></div>`}
+const sheet=pre=>{S={type:"expense",...pre};draw()},closeSheet=()=>{$("#sheet").innerHTML=""};
+async function saveTx(){vals();const t=S.type,amt=toP(S.amt);S.err="";
+if(!(amt>0))S.err="Enter an amount above zero.";
+else if((t==="lend"||t==="borrow")&&!(S.who||"").trim())S.err="Enter the person’s name.";
+else if((t==="collect"||t==="repay")&&!S.edit&&!D.loans.find(l=>l.id===S.loan))S.err="Choose an open loan.";
+else if(t==="transfer"&&S.to===S.acc)S.err="Choose two different accounts.";
+if(S.err)return draw();
+const tx={id:uid(),type:t,amt,acc:S.acc||D.acc[0].id,ts:S.ts||now(),note:(S.note||"").trim(),cat:CAT[t]?(S.cat||CAT[t][0]):"",who:"",to:t==="transfer"?S.to:""};
+if(S.edit){const o=D.tx.find(x=>x.id===S.edit),l=o.loan&&D.loans.find(x=>x.id===o.loan);if(l){if(t==="lend"||t==="borrow"){Object.assign(l,{p:amt,who:S.who.trim(),r:parseFloat(S.rate)||0,due:S.due||""})}else l.paid+=amt-o.amt;tx.who=l.who;tx.loan=l.id}Object.assign(o,tx,{id:o.id});await save();closeSheet();return render()}
+if(t==="lend"||t==="borrow"){const l={id:uid(),who:S.who.trim(),p:amt,r:parseFloat(S.rate)||0,dir:t==="lend"?"out":"in",due:S.due||"",paid:0};D.loans.push(l);tx.loan=l.id;tx.who=l.who;ld=l.dir}
+else if(t==="collect"||t==="repay"){const l=D.loans.find(x=>x.id===S.loan);l.paid+=amt;tx.loan=l.id;tx.who=l.who}
+D.tx.push(tx);await save();closeSheet();render()}
+function delTx(id){const t=D.tx.find(x=>x.id===id);if(!t)return;D.gone=(D.gone||[]).concat(id);const l=t.loan&&D.loans.find(x=>x.id===t.loan);
+if(l){if(t.type==="lend"||t.type==="borrow"){D.tx=D.tx.filter(x=>x.loan!==l.id);D.loans=D.loans.filter(x=>x!==l)}else l.paid-=t.amt}
+D.tx=D.tx.filter(x=>x.id!==id)}
+
+/* ---------- events ---------- */
+document.addEventListener("click",async e=>{const t=e.target.closest("[data-k],[data-tab],[data-act]");if(!t)return;const d=t.dataset;
+if(d.k!==undefined)return key(d.k);
+if(d.tab){tab=d.tab;pd=null;wp=false;return render()}
+const a=d.act;
+if(a==="new")sheet();
+else if(a==="stype"){vals();S.type=d.v;S.loan="";S.cat="";S.err="";draw()}
+else if(a==="close")closeSheet();
+else if(a==="save")await saveTx();
+else if(a==="flt"){flt=d.v;render()}
+else if(a==="ld"){ld=d.v;render()}
+else if(a==="del"){if(pd===d.id){delTx(d.id);pd=null;await save()}else pd=d.id;render()}
+else if(a==="pay")sheet({type:d.v,loan:d.id})
+else if(a==="addacc"){const n=($("#na").value||"").trim();if(!n){$("#ne").textContent="Enter an account name.";return}
+D.acc.push({id:uid(),name:n,type:$("#nt").value,open:toP($("#no").value)});await save();render()}
+else if(a==="edit"){const t=D.tx.find(x=>x.id===d.id);if(!t)return;const l=(t.loan&&D.loans.find(x=>x.id===t.loan))||{};sheet({type:t.type,edit:t.id,amt:String(t.amt/100),acc:t.acc,to:t.to,cat:t.cat,note:t.note,ts:t.ts,who:l.who||"",rate:l.r!=null?String(l.r):"",due:l.due||""})}
+else if(a==="bk"){D.bk=Date.now();await save();const v=get(LS)||"",o=$("#bko"),m=$("#bkm");o.value=v;o.hidden=false;o.select();try{await navigator.clipboard.writeText(v);m.textContent="Copied. Paste it somewhere safe, such as WhatsApp to yourself or your email."}catch(x){m.textContent="Press and hold the box, copy it, and keep it somewhere safe."}}
+else if(a==="rs"){const v=($("#rso").value||"").trim(),m=$("#bkm");try{const b=JSON.parse(v);if(!(b.s&&b.iv&&b.d))throw 0;if(!rw){rw=true;m.textContent="This replaces everything on this phone. Tap Restore again to continue.";return}put(LS,v);put("adm_d","1");put("adm_u",String(Date.now()));rw=false;lockNow()}catch(x){m.textContent="That does not look like a backup."}}
+else if(a==="auth"){const e=$("#em").value.trim(),p=$("#pw").value;try{if(am==="in")await signInWithEmailAndPassword(auth,e,p);else await createUserWithEmailAndPassword(auth,e,p)}catch(x){authView(({"auth/invalid-credential":"Wrong email or password.","auth/email-already-in-use":"That email already has an account.","auth/weak-password":"Use at least 6 characters.","auth/invalid-email":"Check the email address.","auth/network-request-failed":"No internet connection."})[x.code]||"Could not sign in. Try again.")}}
+else if(a==="amode"){am=am==="in"?"up":"in";authView()}
+else if(a==="forgot"){const e=$("#em").value.trim();if(!e)return authView("Type your email first.");try{await sendPasswordResetEmail(auth,e)}catch(x){}authView("If that email has an account, a reset link is on its way.")}
+else if(a==="out"){await push();if(get("adm_d")==="1"){cs("Some changes have not synced yet. Connect to the internet, then sign out.");return}try{localStorage.clear()}catch(x){}await signOut(auth)}
+else if(a==="lock")lockNow();
+else if(a==="chpin"){mode="change1";buf="";tmp="";msg="";lockView()}
+else if(a==="cancelpin"){mode="unlock";buf="";tmp="";$("#lock").hidden=true}
+else if(a==="wipe"){if(!wp){wp=true;render()}else{try{await deleteDoc(rf())}catch(x){}try{localStorage.clear()}catch(x){}D=null;KEY=null;wp=false;$("#app").innerHTML="";mode="setup1";buf="";lockView()}}
+});
+document.addEventListener("change",async e=>{if(e.target.id==="bd"&&D){D.budget=toP(e.target.value);await save()}if(e.target.id==="al"&&D){D.lock=+e.target.value;await save()}});
+addEventListener("online",push);
+onAuthStateChanged(auth,async u=>{U=u;if(!u){D=null;KEY=null;$("#app").innerHTML="";$("#sheet").innerHTML="";return authView()}
+const ok=await reconcile();if(ok===false&&!get(LS))return authView("Connect to the internet once to load your records, then try again.");
+mode=get(LS)?"unlock":"setup1";buf="";lockView()});
+</script>
+</body>
+</html>
