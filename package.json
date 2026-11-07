@@ -1,1 +1,1 @@
-{"name":"sika","private":true,"dependencies":{"@capacitor/android":"^6.1.0","@capacitor/core":"^6.1.0"},"devDependencies":{"@capacitor/cli":"^6.1.0"}}
+{"name":"sika","private":true,"dependencies":{"capacitor-native-biometric":"^4.2.2","@capacitor/android":"^6.1.0","@capacitor/core":"^6.1.0"},"devDependencies":{"@capacitor/cli":"^6.1.0"}}

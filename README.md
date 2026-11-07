@@ -25,3 +25,9 @@ Old preview: Settings > Create backup. New app: log in, set a PIN, Settings > Re
 ## Good to know
 - Cloud holds only locked text. Your PIN never leaves the phone, so a forgotten PIN cannot be recovered by anyone.
 - Changing the PIN on one device means the others need the new PIN after their next sync.
+
+## Android extras (after `npx cap add android`)
+1. `android/app/src/main/AndroidManifest.xml`: add `<uses-permission android:name="android.permission.USE_BIOMETRIC" />` and set `android:allowBackup="false"` on the `<application>` tag.
+2. Hide Sika from screenshots and the recent-apps preview: in `MainActivity.java`, inside `onCreate`, add `getWindow().setFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE, android.view.WindowManager.LayoutParams.FLAG_SECURE);`
+3. App icon: replace the launcher icons in `android/app/src/main/res/mipmap-*` (Android Studio: right-click `res` > New > Image Asset).
+4. Release build: Build > Generate Signed Bundle (AAB). Keep the signing key safe, since losing it means you cannot update the app.

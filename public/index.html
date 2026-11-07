@@ -7,6 +7,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#14213d">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap">
 <style>
@@ -71,7 +72,7 @@ input,select,textarea{display:block;width:100%;margin-top:4px;padding:11px;borde
 <div id="app"></div><div id="sheet"></div><div id="lock" hidden></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import{getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import{getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut,sendPasswordResetEmail,deleteUser}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import{getFirestore,doc,getDoc,setDoc,deleteDoc}from"https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import{CFG}from"./firebase-config.js";
 if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
@@ -108,10 +109,13 @@ else if(nb)put("adm_c",pk(r));else if(dirty)push();return true}
 async function mergeC(p){try{const b=JSON.parse(get("adm_c")),k=await derive(p,dec(b.s)),R=JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:dec(b.iv)},k,dec(b.d))));
 for(const f of["acc","tx","loans"]){const ids=new Set(D[f].map(x=>x.id));(R[f]||[]).forEach(x=>{if(!ids.has(x.id)&&!(D.gone||[]).includes(x.id))D[f].push(x)})}
 put("adm_c","");await save()}catch(e){put("adm_c","");await save()}}
-function authView(m){$("#lock").innerHTML=`<div class="lk"><div class="kt"></div><h1>Sika</h1><p style="font-size:12px;opacity:.7;margin:0">by Adombra</p><p>${am==="in"?"Log in to open your records":"Create your account"}</p><input id="em" type="email" autocomplete="email" placeholder="Email"><input id="pw" type="password" autocomplete="${am==="in"?"current-password":"new-password"}" placeholder="Password (6+ characters)" style="margin-top:8px"><p class="err">${esc(m||"")}</p><button class="btn" style="background:var(--gold);color:#14213d" data-act="auth">${am==="in"?"Log in":"Create account"}</button><button class="lnk" data-act="amode">${am==="in"?"New here? Create an account":"Have an account? Log in"}</button>${am==="in"?'<br><button class="lnk" data-act="forgot">Forgot password</button>':""}</div>`;$("#lock").hidden=false}
+function authView(m){$("#lock").innerHTML=`<div class="lk">${MARK}<h1>Sika</h1><p style="font-size:12px;opacity:.7;margin:0">by Adombra</p><p>${am==="in"?"Log in to open your records":"Create your account"}</p><input id="em" type="email" autocomplete="email" placeholder="Email"><input id="pw" type="password" autocomplete="${am==="in"?"current-password":"new-password"}" placeholder="Password (6+ characters)" style="margin-top:8px"><p class="err">${esc(m||"")}</p><button class="btn" style="background:var(--gold);color:#14213d" data-act="auth">${am==="in"?"Log in":"Create account"}</button><button class="lnk" data-act="amode">${am==="in"?"New here? Create an account":"Have an account? Log in"}</button>${am==="in"?'<br><button class="lnk" data-act="forgot">Forgot password</button>':""}</div>`;$("#lock").hidden=false}
+const MARK='<img src="mark-gold.png" alt="" width="84" style="display:block;margin:0 auto 14px">';
+const NB=window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()?Capacitor.Plugins.NativeBiometric:null;let PINM=null;const BS="sika.adombra";
+async function bioUnlock(){if(!NB||get("adm_bio")!=="1")return;try{await NB.verifyIdentity({reason:"Unlock Sika",title:"Sika"});const c=await NB.getCredentials({server:BS});await tryUnlock(c.password);if(!D)lockView()}catch(e){}}
 /* ---------- lock screen ---------- */
 function lockView(){const t={unlock:"Enter your PIN",setup1:"Create a 6-digit PIN to protect your records",setup2:"Enter the PIN again to confirm",change1:"Choose a new 6-digit PIN",change2:"Enter the new PIN again"}[mode];
-$("#lock").innerHTML=`<div class="lk"><div class="kt"></div><h1>Sika</h1><p style="font-size:12px;opacity:.7;margin:0">by Adombra</p><p>${t}</p><div class="dots">${[0,1,2,3,4,5].map(i=>`<i class="${i<buf.length?"on":""}"></i>`).join("")}</div><p class="err">${esc(msg)}</p><div class="pad">${[1,2,3,4,5,6,7,8,9,"",0,"⌫"].map(k=>k===""?"<span></span>":`<button data-k="${k}">${k}</button>`).join("")}</div>${mode==="change1"||mode==="change2"?'<button class="lnk" data-act="cancelpin">Cancel</button>':""}${mode.startsWith("setup")?'<p style="font-size:12px;opacity:.7;margin-top:18px">Your records are encrypted with this PIN. It cannot be recovered if you forget it.</p>':""}</div>`;
+$("#lock").innerHTML=`<div class="lk">${MARK}<h1>Sika</h1><p style="font-size:12px;opacity:.7;margin:0">by Adombra</p><p>${t}</p><div class="dots">${[0,1,2,3,4,5].map(i=>`<i class="${i<buf.length?"on":""}"></i>`).join("")}</div><p class="err">${esc(msg)}</p><div class="pad">${[1,2,3,4,5,6,7,8,9,"",0,"⌫"].map(k=>k===""?"<span></span>":`<button data-k="${k}">${k}</button>`).join("")}</div>${NB&&mode==="unlock"&&get("adm_bio")==="1"?'<button class="lnk" data-act="bioin">Use fingerprint</button>':""}${mode==="change1"||mode==="change2"?'<button class="lnk" data-act="cancelpin">Cancel</button>':""}${mode.startsWith("setup")?'<p style="font-size:12px;opacity:.7;margin-top:18px">Your records are encrypted with this PIN. It cannot be recovered if you forget it.</p>':""}</div>`;
 $("#lock").hidden=false}
 async function key(k){if(k==="⌫")buf=buf.slice(0,-1);else if(buf.length<6)buf+=k;msg="";if(buf.length<6)return lockView();
 const p=buf;buf="";lockView();
@@ -122,11 +126,11 @@ else await commitPin(p);
 if(!$("#lock").hidden)lockView()}
 async function tryUnlock(p){await reconcile();const f=+get("adm_f")||0,w=(+get("adm_t")||0)-Date.now();
 if(w>0){msg="Too many tries. Wait "+Math.ceil(w/1000)+" seconds.";return}
-try{const b=JSON.parse(get(LS)),s=dec(b.s),k=await derive(p,s);const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:dec(b.iv)},k,dec(b.d));D=JSON.parse(new TextDecoder().decode(pt));if(!D.v){D.acc.forEach(a=>a.open=Math.round(a.open*100));D.tx.forEach(t=>t.amt=Math.round(t.amt*100));D.loans.forEach(l=>{l.p=Math.round(l.p*100);l.paid=Math.round(l.paid*100)});D.budget=Math.round((D.budget||0)*100);D.v=2}KEY=k;SALT=s;put("adm_f","0");if(get("adm_c"))await mergeC(p);openApp()}
+try{const b=JSON.parse(get(LS)),s=dec(b.s),k=await derive(p,s);const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:dec(b.iv)},k,dec(b.d));D=JSON.parse(new TextDecoder().decode(pt));if(!D.v){D.acc.forEach(a=>a.open=Math.round(a.open*100));D.tx.forEach(t=>t.amt=Math.round(t.amt*100));D.loans.forEach(l=>{l.p=Math.round(l.p*100);l.paid=Math.round(l.paid*100)});D.budget=Math.round((D.budget||0)*100);D.v=2}KEY=k;SALT=s;put("adm_f","0");PINM=p;if(get("adm_c"))await mergeC(p);openApp()}
 catch(e){const n=f+1;put("adm_f",String(n));if(n>=3)put("adm_t",String(Date.now()+Math.min(300,10*2**(n-3))*1000));msg="Wrong PIN."}}
-async function commitPin(p){SALT=crypto.getRandomValues(new Uint8Array(16));KEY=await derive(p,SALT);if(!D)D=defaults();await save();openApp()}
+async function commitPin(p){PINM=p;if(NB&&get("adm_bio")==="1")try{await NB.setCredentials({username:"sika",password:p,server:BS})}catch(e){}SALT=crypto.getRandomValues(new Uint8Array(16));KEY=await derive(p,SALT);if(!D)D=defaults();await save();openApp()}
 function openApp(){mode="unlock";buf="";tmp="";msg="";$("#lock").hidden=true;render()}
-function lockNow(){D=null;KEY=null;$("#sheet").innerHTML="";$("#app").innerHTML="";mode="unlock";buf="";lockView()}
+function lockNow(){D=null;KEY=null;PINM=null;$("#sheet").innerHTML="";$("#app").innerHTML="";mode="unlock";buf="";lockView();bioUnlock()}
 document.addEventListener("visibilitychange",()=>{if(document.hidden)hid=Date.now();else if(D&&Date.now()-hid>D.lock*1000)lockNow()});
 
 /* ---------- numbers ---------- */
@@ -163,10 +167,10 @@ function set(){const c=calc();
 return `<h3 style="margin-top:4px">Accounts</h3>${c.a.map(a=>`<div class="row"><div><b>${esc(a.name)}</b><small>${{bank:"Bank",momo:"Mobile money",cash:"Cash",save:"Savings / Susu"}[a.type]}</small></div><b>${fmt(a.bal)}</b></div>`).join("")}
 <div class="box" style="margin-top:12px"><b>Add an account</b><div class="two"><label>Name<input id="na" placeholder="e.g. GCB savings"></label><label>Type<select id="nt"><option value="bank">Bank</option><option value="momo">Mobile money</option><option value="cash">Cash</option><option value="save">Savings / Susu</option></select></label></div><label>Balance now (GH₵)<input id="no" inputmode="decimal" placeholder="0.00"></label><p class="err" id="ne"></p><button class="btn" data-act="addacc">Add account</button></div>
 <h3>Budget</h3><label>Monthly spending limit (GH₵)<input id="bd" inputmode="decimal" placeholder="Leave empty for none" value="${D.budget?D.budget/100:""}"></label><h3>Account and sync</h3><div class="row"><span>${esc(U?U.email:"")}</span><button class="chip" data-act="out">Sign out</button></div><p id="cs" style="color:var(--mut);font-size:13px">Cloud sync is on.</p><h3>Security</h3><label>Lock automatically after leaving the app for<select id="al">${[[0,"Immediately"],[60,"1 minute"],[300,"5 minutes"]].map(([v,n])=>`<option value="${v}" ${D.lock===v?"selected":""}>${n}</option>`).join("")}</select></label>
-<div class="two" style="margin-top:12px"><button class="btn gh" data-act="chpin">Change PIN</button><button class="btn" data-act="lock">Lock now</button></div>
+${NB?`<div class="row"><span>Fingerprint unlock</span><button class="chip" data-act="bio">${get("adm_bio")==="1"?"Turn off":"Turn on"}</button></div>`:""}<div class="two" style="margin-top:12px"><button class="btn gh" data-act="chpin">Change PIN</button><button class="btn" data-act="lock">Lock now</button></div>
 <p style="color:var(--mut);font-size:12px">Records are encrypted on this phone with your PIN. Cloud sync and optional SMS reading arrive in the next phase.</p>
 <h3>Back up and restore</h3><p style="color:var(--mut);font-size:13px;margin:0 0 8px">A backup is a block of locked text. Only your PIN opens it, so it is safe to keep in WhatsApp or email.</p><button class="btn" data-act="bk">Create backup</button><textarea id="bko" rows="4" hidden readonly></textarea><label>Restore from a backup<textarea id="rso" rows="3" placeholder="Paste a backup here"></textarea></label><button class="btn gh" style="margin-top:8px" data-act="rs">Restore</button><p class="err" id="bkm" style="color:var(--mut)"></p>
-<button class="btn ${wp?"dn":"gh"}" style="margin-top:8px" data-act="wipe">${wp?"Tap again to erase everything":"Erase all data"}</button>`}
+<button class="btn ${wp?"dn":"gh"}" style="margin-top:8px" data-act="wipe">${wp?"Tap again to delete your account and everything":"Delete account and all data"}</button>`}
 function render(){if(!D)return;const v={home,act,loans,biz,set}[tab]();$("#app").innerHTML=`<main>${v}</main><nav>${[["home","Home"],["act","Activity"],["loans","Loans"],["biz","Business"],["set","Settings"]].map(([k,n])=>`<button data-tab="${k}" class="${tab===k?"on":""}">${n}</button>`).join("")}</nav><button class="fab" data-act="new" aria-label="Add entry">+</button>`}
 
 /* ---------- entry sheet ---------- */
@@ -219,16 +223,18 @@ else if(a==="auth"){const e=$("#em").value.trim(),p=$("#pw").value;try{if(am==="
 else if(a==="amode"){am=am==="in"?"up":"in";authView()}
 else if(a==="forgot"){const e=$("#em").value.trim();if(!e)return authView("Type your email first.");try{await sendPasswordResetEmail(auth,e)}catch(x){}authView("If that email has an account, a reset link is on its way.")}
 else if(a==="out"){await push();if(get("adm_d")==="1"){cs("Some changes have not synced yet. Connect to the internet, then sign out.");return}try{localStorage.clear()}catch(x){}await signOut(auth)}
+else if(a==="bioin")bioUnlock();
+else if(a==="bio"){let m="";if(get("adm_bio")==="1"){try{await NB.deleteCredentials({server:BS})}catch(x){}put("adm_bio","0")}else{try{const r=await NB.isAvailable();if(!r.isAvailable)throw 0;await NB.verifyIdentity({reason:"Turn on fingerprint unlock",title:"Sika"});await NB.setCredentials({username:"sika",password:PINM,server:BS});put("adm_bio","1")}catch(x){m="Fingerprint could not be turned on. Check that one is set up on this phone."}}render();if(m)cs(m)}
 else if(a==="lock")lockNow();
 else if(a==="chpin"){mode="change1";buf="";tmp="";msg="";lockView()}
 else if(a==="cancelpin"){mode="unlock";buf="";tmp="";$("#lock").hidden=true}
-else if(a==="wipe"){if(!wp){wp=true;render()}else{try{await deleteDoc(rf())}catch(x){}try{localStorage.clear()}catch(x){}D=null;KEY=null;wp=false;$("#app").innerHTML="";mode="setup1";buf="";lockView()}}
+else if(a==="wipe"){if(!wp){wp=true;render()}else{try{await deleteDoc(rf())}catch(x){}try{await deleteUser(auth.currentUser)}catch(x){}try{localStorage.clear()}catch(x){}D=null;KEY=null;wp=false;$("#app").innerHTML="";mode="setup1";buf="";if(auth.currentUser)lockView()}}
 });
 document.addEventListener("change",async e=>{if(e.target.id==="bd"&&D){D.budget=toP(e.target.value);await save()}if(e.target.id==="al"&&D){D.lock=+e.target.value;await save()}});
 addEventListener("online",push);
 onAuthStateChanged(auth,async u=>{U=u;if(!u){D=null;KEY=null;$("#app").innerHTML="";$("#sheet").innerHTML="";return authView()}
 const ok=await reconcile();if(ok===false&&!get(LS))return authView("Connect to the internet once to load your records, then try again.");
-mode=get(LS)?"unlock":"setup1";buf="";lockView()});
+mode=get(LS)?"unlock":"setup1";buf="";lockView();if(mode==="unlock")bioUnlock()});
 </script>
 </body>
 </html>
